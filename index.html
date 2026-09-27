@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberGuard AI — Security Platform</title>
+    <!-- Library for REAL PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --bg-primary: #090d16;
+            --bg-card: #111827;
+            --bg-input: #1f2937;
+            --border: #374151;
+            --accent: #0284c7;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --pro-gold: #f59e0b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+        }
+
+        .logo { font-size: 22px; font-weight: 700; color: #38bdf8; }
+        
+        .tier-badge {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--pro-gold);
+            border: 1px solid var(--pro-gold);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .scan-modules {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .module-btn {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 14px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .module-btn.pro-feature::after {
+            content: "PRO";
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: var(--pro-gold);
+            color: #000;
+            font-size: 9px;
+            font-weight: 900;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+
+        .module-btn.active {
+            background: var(--accent);
+            border-color: #38bdf8;
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(2, 132, 199, 0.4);
+        }
+
+        .input-group { margin-bottom: 24px; }
+        label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted); }
+        input[type="text"] {
+            width: 100%; padding: 14px; border-radius: 8px; border: 1px solid var(--border);
+            background: var(--bg-input); color: #38bdf8; font-family: monospace; font-size: 14px; box-sizing: border-box;
+        }
+
+        .scan-btn {
+            width: 100%; background: #2563eb; color: white; border: none; padding: 16px;
+            border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer;
+        }
+
+        .terminal {
+            background: #030712; border: 1px solid #1f2937; color: #4ade80; font-family: monospace;
+            padding: 18px; border-radius: 8px; margin-top: 24px; height: 180px; overflow-y: auto; display: none; font-size: 13px;
+        }
+
+        .result-card {
+            background: #182234; border: 1px solid var(--border); padding: 24px; margin-top: 24px; border-radius: 8px; display: none;
+        }
+
+        .severity-tag {
+            display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 800; margin-bottom: 12px;
+        }
+        .sev-critical { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444; }
+
+        .poc-box {
+            background: #030712; border-left: 3px solid var(--danger); padding: 14px; font-family: monospace;
+            font-size: 12px; color: #e2e8f0; margin: 12px 0 20px 0; border-radius: 4px;
+        }
+
+        .diff-box {
+            background: #030712; padding: 14px; font-family: monospace; font-size: 13px; border-radius: 6px;
+            margin-top: 8px; white-space: pre-wrap; border: 1px solid var(--border);
+        }
+        .diff-del { color: #f87171; }
+        .diff-add { color: #4ade80; }
+
+        /* ИДЕАЛЬНО 2 КНОПКИ ВНИЗУ */
+        .actions-grid { margin-top: 24px; display: flex; gap: 16px; }
+        .btn-action { flex: 1; padding: 14px; border-radius: 8px; font-weight: 700; font-size: 15px; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-pdf { background: #16a34a; color: white; } /* Зеленый PDF */
+        .btn-pdf:hover { background: #15803d; }
+        .btn-expert { background: #0284c7; color: white; } /* Голубой Эксперт */
+        .btn-expert:hover { background: #0369a1; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="logo">🛡️ CyberGuard AI</div>
+        <div class="tier-badge">PRO PLAN ($149/mo)</div>
+    </div>
+
+    <label>Select Target Security Vector:</label>
+    <div class="scan-modules">
+        <div class="module-btn active" id="btnCode" onclick="setMode('code')">
+            💻 GitHub / Code
+        </div>
+        <div class="module-btn" id="btnWeb" onclick="setMode('web')">
+            🌐 Web / OWASP Scan
+        </div>
+        <div class="module-btn pro-feature" id="btnPentest" onclick="setMode('pentest')">
+            ⚔️ Attack Simulation
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label id="inputLabel">Target GitHub Repository URL:</label>
+        <input type="text" id="targetInput" value="https://github.com/company/payment-gateway">
+    </div>
+
+    <button class="scan-btn" onclick="startScanning()">Launch Security Audit</button>
+
+    <div id="terminal" class="terminal"></div>
+
+    <div id="resultCard" class="result-card">
+        <span class="severity-tag sev-critical" id="sevTag">CRITICAL VULNERABILITY</span>
+        <h2 id="vulnTitle" style="margin: 0 0 8px 0;">SQL Injection in Auth Controller</h2>
+        
+        <div style="font-size: 14px; color: var(--text-muted); margin-bottom: 16px;">
+            <b>Target Endpoint / Artifact:</b> <span id="targetArtifact" style="color: #38bdf8;">src/api/authController.js</span>
+        </div>
+        
+        <label>Proof of Concept (Validated Evidence):</label>
+        <div class="poc-box" id="pocBox"></div>
+
+        <div id="solutionContainer">
+            <label id="solutionLabel">AI-Generated Code Patch:</label>
+            <div class="diff-box" id="diffBox"></div>
+        </div>
+
+        <div class="actions-grid">
+            <button class="btn-action btn-pdf" onclick="generatePDFReport()">📄 Download PDF Report</button>
+            <button class="btn-action btn-expert" onclick="requestExpert()">💬 Request Expert ($50)</button>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
